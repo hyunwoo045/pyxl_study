@@ -8,18 +8,26 @@ import openpyxl
 class car_exDate_cal(Frame):
     ## 프로그램 GUI 기본틀 제작 ##
     def __init__(self, master):
-        Frame.__init__(self, master)
+        fields = '차량 번호', '등록일', '만료일'
+        ents = self.makeform(master, fields)
+        print(ents)
 
-        self.master = master
-        self.master.title("등록차량 만료일 근접차량 추출기")
-        self.pack(fill=BOTH, expand=True)
+        row = Frame(master)
+        lab = Label(row, width=15, text="파일: ", anchor='w')
+        ent = Entry(row)
+        btn = Button(row, text="browser", command=self.onClickFile)
+        row.pack(side=TOP, fill=X, padx=5, pady=5)
+        lab.pack(side=LEFT)
+        ent.pack(side=LEFT, expand=YES, fill=X)
+        btn.pack(side=RIGHT, padx=5, pady=5)
+        master.bind("<Return>", lambda eff: self.onSaveFile(ents[0][1], ents[1][1], ents[2][1]))
+        b1 = Button(master, text='Save',
+                    command=(lambda e=ents: self.onSaveFile(ents[0][1], ents[1][1], ents[2][1])))
+        b1.pack(side=LEFT, padx=5, pady=5)
+        b2 = Button(master, text='Quit', command=master.quit)
+        b2.pack(side=LEFT, padx=5, pady=5)
 
-        frame = Frame(self)
-        frame.pack(fill=X)
-        lbl = Label(frame, text="엑셀 파일을 불러오기")
-        lbl.grid(row=0, column=0)
-        btn = Button(frame, text="불러오기", command=self.onClickFile)
-        btn.grid(row=1, column=0)
+
 
     ## 파일을 불러오면 바로 만료일 계산 및 경고 메시지박스 출력 ##
     def onClickFile(self):
@@ -39,11 +47,28 @@ class car_exDate_cal(Frame):
             else:
                 pass
 
+    def onSaveFile(self, a, b, c):
+        message = a.get()
+        message2 = b.get()
+        message3 = c.get()
+        messagebox.showinfo(message, message2 + " " + message3)
 
+        # wb = openpyxl.load_workbook("C:/example.xlsx")
+
+    def makeform(self, root, fields):
+        entries = []
+        for field in fields:
+            row = Frame(root)
+            lab = Label(row, width=15, text=field, anchor='w')
+            ent = Entry(row)
+            row.pack(side=TOP, fill=X, padx=5, pady=5)
+            lab.pack(side=LEFT)
+            ent.pack(side=RIGHT, expand=YES, fill=X)
+            entries.append((field, ent))
+        return entries
 
 def main():
     root = Tk()
-    root.geometry("150x50+100+100")
     app = car_exDate_cal(root)
     root.mainloop()
 
